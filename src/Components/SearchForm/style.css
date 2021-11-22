@@ -1,0 +1,52 @@
+#search-form {
+  width: 85%;
+}
+
+#search-form .input-group {
+  border-radius: 15px;
+}
+
+#search-form input {
+  height: 34px;
+  padding-bottom: 10px;
+  border-radius: 15px 0 0 15px;
+  font-size: 15px;
+  color: #c32bad;
+}
+
+#search-form input:focus {
+  box-shadow: unset;
+}
+
+#search-form input::-webkit-input-placeholder {
+  color: #c32bad;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+}
+
+#search-form .input-group-append {
+  height: 34px;
+  background-color: #fff;
+  border-radius: 0 15px 15px 0;
+  padding-bottom: 2px;
+}
+
+#search-form button {
+  color: #c32bad;
+}
+
+#search-form button:focus {
+  box-shadow: unset;
+}
+
+#search-form button i {
+  vertical-align: 1px;
+}
+
+#search-form button :hover {
+  color: #c32bad;
+}

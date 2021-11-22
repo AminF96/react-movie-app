@@ -1,0 +1,37 @@
+.card {
+  height: 400px;
+}
+
+.card img {
+  height: 60%;
+  cursor: pointer;
+}
+
+.card .card-body {
+  padding: 12px 15px 4px 20px;
+  overflow-y: hidden;
+}
+
+.card .card-body h5 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #c32bad;
+}
+
+.info-key {
+  color: #c32bad;
+  font-size: 13.5px;
+  font-weight: 640;
+}
+
+.info-value {
+  font-size: 12px;
+  margin-left: 6px;
+  font-weight: 650;
+}
+
+@media screen and (max-width: 767px) {
+  .card img {
+    object-fit: contain;
+  }
+}
