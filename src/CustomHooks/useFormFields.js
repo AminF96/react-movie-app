@@ -10,5 +10,6 @@ export default function useFormFields(inint) {
       [target.name]: target.value,
     });
   }
+
   return { fields, handleChange };
 }
