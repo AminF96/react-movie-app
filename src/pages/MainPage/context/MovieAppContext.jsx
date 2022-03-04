@@ -1,8 +1,7 @@
 import { createContext, useReducer } from "react";
 import { useSearchParams } from "react-router-dom";
 import useContextProducer from "../../../CustomHooks/useContextProducer";
-import { reducer } from "./reducer";
-import { sortOrders } from "./reducer";
+import reducer from "./moviesSlice";
 
 const movieStateContext = createContext();
 
@@ -19,15 +18,13 @@ export const useMovieDispatcherContext = () => {
 export function MovieAppProvider({ children }) {
   let [searchParams] = useSearchParams();
 
-  const query = searchParams.get("q");
-
   const initState = {
-    searchValue: query,
-    sortOrder: query ? sortOrders.POPULARITY : sortOrders.NEWEST,
-    isLoading: true,
+    searchValue:null,
+    sortOrder:null,
+    isLoading: false,
     pageNum: 1,
-    pagesCount: 0,
-    result: null,
+    totalPages: 0,
+    entities: null,
   };
 
   const [state, dispatch] = useReducer(reducer, initState);

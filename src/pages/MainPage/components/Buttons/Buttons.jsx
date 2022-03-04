@@ -1,42 +1,40 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   useMovieStateContext,
   useMovieDispatcherContext,
 } from "../../context/MovieAppContext";
-import { getChangePageAction } from "../../context/getActionObj";
+import {
+  ChangeSearchedPage,
+  fetchAllMoviesHandler,
+} from "../../context/moviesSlice";
 import { searchParameters } from "../../../../router/searchParams";
 import PrevBtn from "../PrevBtn";
 import NextBtn from "../NextBtn";
 
 export default function Buttons() {
-  const [isDispatchChangePage, setIsDispatchChangePage] = useState(false);
-
+  const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
 
-  const { pageNum, pagesCount } = useMovieStateContext();
-
+  const { pageNum, sortOrder, totalPages, searchValue } =
+    useMovieStateContext();
   const dispatch = useMovieDispatcherContext();
 
-  useEffect(() => {
-    const page = searchParams.get(searchParameters.PAGE_NUM);
+  const changePageHandler = async (type) => {
+    const newPage = type === "next" ? Number(pageNum) + 1 : Number(pageNum) - 1;
 
-    if (isDispatchChangePage) {
-      page && dispatch(getChangePageAction(page));
-
-      setIsDispatchChangePage(false);
+    if (searchValue) {
+      dispatch(ChangeSearchedPage(newPage));
+    } else {
+      const response = await fetchAllMoviesHandler(
+        dispatch,
+        navigate,
+        sortOrder,
+        newPage
+      );
     }
-  }, [dispatch, searchParams, isDispatchChangePage]);
 
-  const changePageHandler = (type) => {
-    const page = type === "next" ? Number(pageNum) + 1 : Number(pageNum) - 1;
-
-    searchParams.append(searchParameters.PAGE_NUM, page);
-
+    searchParams.append(searchParameters.PAGE_NUM, newPage);
     const params = Object.fromEntries([...searchParams]);
-
-    setIsDispatchChangePage(true);
-
     setSearchParams(params);
 
     window.scrollTo(0, 0);
@@ -51,7 +49,7 @@ export default function Buttons() {
           }}
         />
       )}
-      {pageNum < pagesCount && (
+      {pageNum < totalPages && (
         <NextBtn
           clickHandler={() => {
             changePageHandler("next");

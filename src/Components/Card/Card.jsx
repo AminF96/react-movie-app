@@ -4,7 +4,7 @@ export default function Card({ poster, title, genres, lang, vote, year }) {
   return (
     <div className="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
       <div className="card rounded-0 border-0 shadow">
-        <img src={poster} className="card-img-top rounded-0" alt="..." />
+        <img src={poster} className="card-img-top rounded-0 align-self-center" alt="..." />
         <div className="card-body">
           <h5 className="card-title mb-1">{title}</h5>
           <div>

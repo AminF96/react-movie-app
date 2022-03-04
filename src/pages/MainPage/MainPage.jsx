@@ -1,52 +1,57 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Loader from "react-loader-spinner";
-import { sortOrders } from "./context/reducer";
-import getSearchResultPages from "./movieResults/getSearchResultPages";
-import getAllMovies from "./movieResults/getAllMovies";
-import { getInfoSuccessAction } from "./context/getActionObj";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { searchParameters } from "../../router/searchParams";
+import {
+  fetchAllMoviesHandler,
+  fetchSearchedMoviesHandler,
+  sortOrders,
+} from "./context/moviesSlice";
 import {
   useMovieStateContext,
   useMovieDispatcherContext,
 } from "./context/MovieAppContext";
-import { paths } from "../../router/paths";
 import Navbar from "./components/Navbar";
 import Result from "./components/Result";
+import Loader from "react-loader-spinner";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 export default function MainPage() {
   const navigate = useNavigate();
+  let [searchParams, setSearchParams] = useSearchParams();
 
-  const { searchValue, sortOrder, isLoading, pageNum } = useMovieStateContext();
-
+  const { isLoading } = useMovieStateContext();
   const dispatch = useMovieDispatcherContext();
 
   useEffect(() => {
-    if (searchValue === null) {
-      getAllMovies(sortOrder, pageNum)
-        .then(({ results }) => {
-          dispatch(getInfoSuccessAction(results));
-        })
-        .catch((error) => {
-          navigate(paths.ERROR, { replace: true });
-        });
-    }
-  }, [sortOrder, pageNum, searchValue, dispatch, navigate]);
+    (async () => {
+      const query = searchParams.get(searchParameters.SEARCH_QUERY);
+      const sortBy = searchParams.get(searchParameters.SORT_ORDER);
+      const page = searchParams.get(searchParameters.PAGE_NUM);
 
-  useEffect(() => {
-    if (searchValue !== null) {
-      const searchSortParam =
-        sortOrder === sortOrders.POPULARITY ? "popularity" : "vote_average";
+      if (query) {
+        const sortParam = sortBy || sortOrders.POPULARITY;
 
-      getSearchResultPages(searchValue, searchSortParam)
-        .then((result) => {
-          dispatch(getInfoSuccessAction(result));
-        })
-        .catch((error) => {
-          navigate(paths.ERROR, { replace: true });
-        });
-    }
-  }, [searchValue, sortOrder, dispatch, navigate]);
+        const response = await fetchSearchedMoviesHandler(
+          dispatch,
+          navigate,
+          query,
+          sortParam,
+          page
+        );
+        console.log(response);
+      } else {
+        const sort = sortBy || sortOrders.NEWEST;
+        const pageNum = page || "1";
+
+        const response = await fetchAllMoviesHandler(
+          dispatch,
+          navigate,
+          sort,
+          pageNum
+        );
+      }
+    })();
+  }, []);
 
   return (
     <div className="container-fluid">

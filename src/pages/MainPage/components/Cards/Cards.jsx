@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { paths } from "../../../../router/paths";
-import generateKey from "../../../../utils/generateKey";
 import movieGenres from "./movieGenresObj";
 import defaultPoster from "./movie.jpg";
 import Card from "../../../../Components/Card";
@@ -9,7 +8,6 @@ export default function Cards({ moviesList }) {
   const navigate = useNavigate();
   
   let movies = "";
-
   if (moviesList !== undefined) {
     try {
       movies = moviesList.map((movie) => {
@@ -17,7 +15,7 @@ export default function Cards({ moviesList }) {
 
         return (
           <Card
-            key={generateKey()}
+            key={movie.id}
             poster={
               movie.poster_path !== null
                 ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`

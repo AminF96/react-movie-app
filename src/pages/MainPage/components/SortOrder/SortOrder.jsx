@@ -1,45 +1,48 @@
-import { useRef, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { sortOrders } from "../../context/reducer";
+import { useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  changeSearchedMoviesSortOrder,
+  fetchAllMoviesHandler,
+  sortOrders,
+} from "../../context/moviesSlice";
 import {
   useMovieStateContext,
   useMovieDispatcherContext,
 } from "../../context/MovieAppContext";
-import { getSetSortOrderAction } from "../../context/getActionObj";
 import { searchParameters } from "../../../../router/searchParams";
 import "./style.css";
 
 export default function SortOrder() {
-  const { sortOrder, searchValue } = useMovieStateContext();
-
-  const dispatch = useMovieDispatcherContext();
-
+  const navigate = useNavigate();
   const dropdownRef = useRef();
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  const { entities, sortOrder, searchValue } = useMovieStateContext();
+  const dispatch = useMovieDispatcherContext();
 
   const isNewestDisable = searchValue !== null;
 
-  let [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    !isNewestDisable && dropdownRef.current.click();
-
-    const sortOrder = searchParams.get(searchParameters.SORT_ORDER);
-
-    sortOrder &&
-      dispatch(
-        getSetSortOrderAction(searchParams.get(searchParameters.SORT_ORDER))
-      );
-  }, [isNewestDisable, searchParams, dispatch]);
-
-  const changeSortOrderHandler = (e) => {
+  const changeSortOrderHandler = async (e) => {
     const sort = e.target.id;
 
     if (searchValue) {
-      const q = searchParams.get(searchParameters.SEARCH_QUERY);
+      dispatch(changeSearchedMoviesSortOrder(entities, sort));
 
-      setSearchParams({ q, sort });
+      const query = searchParams.get(searchParameters.SEARCH_QUERY);
+
+      setSearchParams({
+        [searchParameters.SEARCH_QUERY]: query,
+        [searchParameters.SORT_ORDER]: sort,
+      });
     } else {
-      setSearchParams({ sort });
+      const response = await fetchAllMoviesHandler(
+        dispatch,
+        navigate,
+        sort,
+        "1"
+      );
+
+      setSearchParams({ [searchParameters.SORT_ORDER]: sort });
     }
   };
 

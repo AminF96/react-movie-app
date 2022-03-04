@@ -8,12 +8,12 @@
 }
 
 .card .card-body {
-  padding: 12px 15px 4px 20px;
+  padding: 0px 15px 4px 20px;
   overflow-y: hidden;
 }
 
 .card .card-body h5 {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: bold;
   color: #c32bad;
 }

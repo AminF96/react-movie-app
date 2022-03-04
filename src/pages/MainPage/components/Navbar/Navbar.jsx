@@ -1,41 +1,30 @@
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./style.css";
 import {
   useMovieStateContext,
   useMovieDispatcherContext,
 } from "../../context/MovieAppContext";
-import {
-  getSetAllMoviesAction,
-  getSetSearchSubmitAction,
-} from "../../context/getActionObj";
-import { sortOrders } from "../../context/reducer";
-import { searchParameters } from "../../../../router/searchParams";
+import { fetchAllMoviesHandler,sortOrders } from "../../context/moviesSlice";
 import SearchForm from "../SearchForm";
 import SortOrder from "../SortOrder";
 
 export default function Navbar() {
+  const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
 
   const { searchValue } = useMovieStateContext();
-
   const dispatch = useMovieDispatcherContext();
 
-  useEffect(() => {
-    const query = searchParams.get(searchParameters.SEARCH_QUERY);
-
-    const sort =
-      searchParams.get(searchParameters.SORT_ORDER) === sortOrders.NEWEST
-        ? sortOrders.POPULARITY
-        : searchParams.get(searchParameters.SORT_ORDER);
-
-    query && dispatch(getSetSearchSubmitAction(query, sort));
-  }, [dispatch, searchParams]);
-
-  const allMoviesClickHandler = () => {
-    setSearchParams({});
-
-    dispatch(getSetAllMoviesAction());
+  const allMoviesClickHandler = async () => {
+    if (searchValue) {
+      setSearchParams({});
+      const response = await fetchAllMoviesHandler(
+        dispatch,
+        navigate,
+        sortOrders.NEWEST,
+        "1"
+      );
+    }
   };
 
   return (

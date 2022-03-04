@@ -1,21 +1,37 @@
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import useFormFields from "../../../../CustomHooks/useFormFields";
+import { searchParameters } from "../../../../router/searchParams";
+import { useMovieDispatcherContext } from "../../context/MovieAppContext";
+import {
+  fetchSearchedMoviesHandler,
+  sortOrders,
+} from "../../context/moviesSlice";
 import "./style.css";
 
 export default function SearchForm() {
   const { fields, handleChange } = useFormFields({ text: "" });
-
+  const navigate = useNavigate();
   let [searchParams, setSearchParams] = useSearchParams();
 
-  const submitHandler = (e) => {
+  const dispatch = useMovieDispatcherContext();
+
+  const submitHandler = async (e) => {
     e.preventDefault();
 
-    const q = fields.text || "";
+    const query = fields.text;
+    if (query) {
+      const response = await fetchSearchedMoviesHandler(
+        dispatch,
+        navigate,
+        query,
+        sortOrders.POPULARITY
+      );
 
-    setSearchParams({ q });
-
-    // empty input value
-    handleChange({ target: { name: "text", value: "" } });
+      setSearchParams({ [searchParameters.SEARCH_QUERY]: query });
+     
+      // empty input value
+       handleChange({ target: { name: "text", value: "" } });
+    }
   };
 
   return (
